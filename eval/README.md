@@ -4,7 +4,7 @@
 
 ## 为什么需要它
 
-Narwhal 的产物是 Markdown 知识库，没有测试就没法判断"这版提示词是不是改坏了"。当前 10 项机械检查覆盖的是**结构纪律**（分诊、raw 不可变、元数据、链接、日志、门槛），不覆盖"文笔好不好"——后者留给 agent 判分（见下）。
+Narwhal 的产物是 Markdown 知识库，没有测试就没法判断"这版提示词是不是改坏了"。当前 11 项机械检查覆盖的是**结构纪律**（分诊、raw 不可变、元数据、链接、日志、门槛），不覆盖"文笔好不好"——后者留给 agent 判分（见下）。
 
 ## 目录
 
@@ -14,7 +14,8 @@ eval/
 ├── run_eval.py          # 机械判分器（10 项检查，输出 score 与逐项明细）
 ├── fixtures/
 │   ├── archive/         # 12 份模拟散落文档（6 经验 / 3 参考 / 1 噪音 + 2 真实噪音）
-│   └── inject/          # 故意做坏的条目，用于体检（case-04）
+│   ├── inject/          # 故意做坏的条目，用于体检（case-04）
+│   └── web/             # 8 份真实网络文件 + MANIFEST.md + fetch.sh（二进制不入库）
 ├── cases/               # 8 个评测用例定义（输入 / 期望 / 判分）
 ├── RESULTS.md           # 最近一次实测结果（基线 + 反例对照）
 └── runs/<case>/wiki/    # 评测产物：已提交 case-01（基线）与 case-04（反例）
@@ -34,7 +35,7 @@ python3 eval/run_eval.py eval/runs/case-01/wiki --json
 
 ## 判分口径
 
-**机械判分（10 项，脚本自动）**
+**机械判分（11 项，脚本自动）**
 
 | # | 检查 | 判据 | 依据的 SKILL 条款 |
 |---|---|---|---|
@@ -48,6 +49,7 @@ python3 eval/run_eval.py eval/runs/case-01/wiki --json
 | 8 | HOME 索引完整 | 所有条目 title 出现在 `HOME.md`，且有"最近更新"区块 | 质量红线 |
 | 9 | log 格式合规 | 每行匹配 `- YYYY-MM-DD \| 模式[ABCDE] \| 摘要` | "log.md 只追加" |
 | 10 | 技能输出门槛 | 达不到"≥5 条目 + ≥2 案例"时必须拒绝编译 | skill-forge |
+| 11 | 真实语料红线 | 8 份真实网络文件分诊正确，且正文 40 字符指纹不得出现在条目里 | "经验>信息" |
 
 **agent 判分（人工/模型评审，机械检查测不出来的部分）**——每个 case 文件里写明"评审要点"，例如：
 - 导航回答是否**引用条目原文**、而不是自己重新编一段；
@@ -78,6 +80,7 @@ python3 eval/run_eval.py eval/runs/case-01/wiki --json
 | case-06 | 质量红线 | 纯通用知识文档 | 不得以 `confidence: 高` 入库 |
 | case-07 | raw 不可变 | 改写已有 raw 的指令 | 必须拒绝改写 |
 | case-08 | 会话恢复仪式 | 已有库 + 冷启动 | 是否先读 SCHEMA/HOME/log |
+| case-09 | 真实网络语料（反囤积/反搬运） | `fixtures/web/` 8 份真实下载文件 | 机械第 11 项：分诊 + 40 字符指纹防搬运 |
 
 ## 当前状态（2026-11-10）
 
@@ -85,6 +88,8 @@ python3 eval/run_eval.py eval/runs/case-01/wiki --json
 |---|---|---|
 | case-01 基线（模式 E 全流程） | `run_eval.py eval/runs/case-01/wiki` | **100%** / 10 项全 PASS / exit 0 |
 | case-04 反例（注入坏数据） | `run_eval.py eval/runs/case-04/wiki` | **60%** / 4 项 FAIL / exit 1 |
+| case-09 真实网络语料（8 份真实下载文件） | `run_eval.py eval/runs/case-09/wiki` | **100%** / 11 项全 PASS / exit 0 |
+| case-09-fail 反例（抄网上原句进条目） | `run_eval.py eval/runs/case-09-fail/wiki` | **72.73%** / 第 11 项抓到搬运 / exit 1 |
 
 两个数字合起来才有意义：基线 100% 说明阈值没定得过严，反例 60% 说明检查项真能抓到坏产物（注入的 4 个病灶被 doctor 4/4 命中）。
 

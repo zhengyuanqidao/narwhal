@@ -263,6 +263,58 @@ def check_forge(root: Path, rep: Report):
     rep.add("10. 技能输出门槛判定", ok, detail)
 
 
+def extract_text(p: Path) -> str:
+    """把真实网络文件抽成纯文本（覆盖 6 种格式）。"""
+    suf = p.suffix.lower()
+    try:
+        if suf == ".pdf":
+            r = subprocess.run(["pdftotext", str(p), "-"], capture_output=True, text=True)
+            return r.stdout
+        if suf == ".docx":
+            import zipfile
+            with zipfile.ZipFile(p) as z:
+                x = z.read("word/document.xml").decode("utf-8", "replace")
+            return re.sub(r"<[^>]+>", " ", x)
+        if suf in (".html", ".htm"):
+            h = read(p)
+            h = re.sub(r"<script.*?</script>|<style.*?</style>", " ", h, flags=re.S)
+            return re.sub(r"<[^>]+>", " ", h)
+        return read(p)
+    except Exception:
+        return ""
+
+
+def check_web_redline(root: Path, rep: Report):
+    """真实网络语料：分诊正确 + 绝不搬运进条目。"""
+    web = GOLDEN.get("web")
+    if not web:
+        rep.add("11. 真实语料红线", False, "golden.json 缺 web 配置")
+        return
+    got = parse_triage(root)
+    probs = []
+    for g in web["triage"]:
+        accept = [g["label"]] + g.get("accept", [])
+        if got.get(g["file"]) not in accept:
+            probs.append(f"{g['file']}: 期望 {'/'.join(accept)}，实得 {got.get(g['file']) or '未分诊'}")
+    # 指纹检测：网络文件正文片段不得出现在条目里
+    web_dir = REPO / web["dir"]
+    entry_text = "".join(re.sub(r"\s+", "", read(p)) for p in (root / "entries").rglob("*.md"))
+    leaked = []
+    for g in web["triage"]:
+        f = web_dir / g["file"]
+        if not f.exists():
+            continue
+        body = re.sub(r"\s+", "", extract_text(f))
+        probe = body[len(body) // 3: len(body) // 3 + 40] if len(body) > 400 else body[:40]
+        if probe and probe in entry_text:
+            leaked.append(g["file"])
+    ok = not probs and not leaked
+    rep.add("11. 真实语料红线（分诊 + 不搬运）", ok,
+            f"{len(web['triage'])} 份真实网络文件"
+            + ("\n分诊错误:\n  " + "\n  ".join(probs) if probs else "")
+            + ("\n外部文本被搬运进条目: " + ", ".join(leaked) if leaked else "\n条目中未检出外部文本指纹"))
+
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("-")]
     as_json = "--json" in sys.argv
@@ -275,7 +327,8 @@ def main():
         return 2
     rep = Report()
     for fn in (check_required, check_triage, check_raw_immutable, check_noise,
-               check_entries, check_doctor, check_moc, check_home, check_log, check_forge):
+               check_entries, check_doctor, check_moc, check_home, check_log, check_forge,
+               check_web_redline):
         try:
             fn(root, rep)
         except Exception as e:  # 单项异常不拖垮整轮

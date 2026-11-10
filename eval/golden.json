@@ -47,5 +47,20 @@
   "quality_redline": {
     "note": "通用知识（学习笔记）不得作为高置信条目入库；最多标 confidence:低·外部参考 或直接不收",
     "forbidden": ["confidence: 高"]
+  },
+  "web": {
+    "dir": "eval/fixtures/web",
+    "note": "8 份真实网络文件，全部为外部资料；正确行为是 0 条入库（见 case-09）",
+    "expect_entries_from_web": 0,
+    "triage": [
+      { "file": "01-Python.gitignore.txt", "label": "噪音" },
+      { "file": "02-openapi-3.0.3.md", "label": "噪音" },
+      { "file": "03-paulgraham-greatwork.html", "label": "参考" },
+      { "file": "04-iris.csv", "label": "噪音" },
+      { "file": "05-1706.03762.pdf", "label": "噪音" },
+      { "file": "06-postmortems-collection.md", "label": "参考", "accept": ["参考", "经验"], "why": "形式像复盘但非本人经历，允许边界判断" },
+      { "file": "07-ruanyf-weekly-README.md", "label": "参考" },
+      { "file": "08-inline_formatting.docx", "label": "噪音" }
+    ]
   }
 }

@@ -59,17 +59,25 @@
 | `eval/run_eval.py` | 机械判分器，10 项检查（分诊准确率/raw sha256/噪音隔离/元数据/doctor/MOC/索引/log/门槛），输出 score + 退出码可直接接 CI |
 | `eval/fixtures/archive/` | 10 份模拟散落文档（亚马逊卖家场景），+ 2 份真实噪音（`/root/.nvm/README.md`、`/root/.oh-my-zsh/README.md`） |
 | `eval/fixtures/inject/` | 5 个故意做坏的条目（断链/孤儿/缺 frontmatter/互相矛盾 ×2） |
-| `eval/cases/` | 8 个用例定义，只有 case-01 走机械判分，其余 7 个是人工/LLM 评审要点 |
-| `eval/runs/case-01/wiki` | 基线产物，score **100%**（10/10 PASS） |
-| `eval/runs/case-04/wiki` | 反例产物（注入坏数据），score **60%**（4 项 FAIL，doctor 4/4 命中） |
+| `eval/cases/` | 9 个用例定义，只有 case-01/09 走机械判分，其余是人工/LLM 评审要点 |
+| `eval/fixtures/web/` | **8 份真实网络文件**（2026-11-10 下载，pdf/html/docx/md/csv/txt）+ MANIFEST（URL/哈希/许可）+ fetch.sh |
+| `eval/runs/case-01/wiki` | 基线产物，score **100%**（10/10） |
+| `eval/runs/case-04/wiki` | 反例（注入坏数据），**60%**（4 项 FAIL，doctor 4/4 命中） |
+| `eval/runs/case-09/wiki` | 真实网络语料增量扫描，**100%**（11/11），经验 0 → 入库 0 条 |
+| `eval/runs/case-09-fail/wiki` | 反例（抄 PG 文章原句进条目），**72.73%**，第 11 项指纹检测抓到 |
+
+`.gitignore` 已改为 `/wiki/`（只忽略仓库根的知识库），`eval/runs/**` 全部入库作为回归基线；`eval/fixtures/web/*` 的二进制不入库（只留 MANIFEST + fetch.sh），需重新拉取时跑 `bash eval/fixtures/web/fetch.sh`。
 
 运行：`python3 eval/run_eval.py eval/runs/case-01/wiki`（退出码 0 通过 / 1 未通过 / 2 用法错误）。
 
-评测暴露的两个 SKILL 缺口（v1.1 候选）：
+评测暴露的五个 SKILL 缺口（v1.1 候选）：
 1. **模式 E 应产出 `wiki/triage.md`**——现在分诊只在对话里，无法审计与回归；
-2. **`methods/` 目录边界不清**——实战中 SOP 全落进 `entries/` 的 method 类型，`methods/` 零文件，要么说清边界要么合并。
+2. **`methods/` 目录边界不清**——实战中 SOP 全落进 `entries/` 的 method 类型，`methods/` 零文件，要么说清边界要么合并；
+3. **零经验语料无处置规则**——素材全是外部资料时，应明确"拒绝建库 + 给统计"，否则 agent 会硬建空领域；
+4. **"参考类"能否进 `raw/` 未定义**（本次实践：不进，raw 只存自己的源材料）；
+5. **采集容错未要求**——解析出 0 字符应视为失败并报告（arxiv 直链那次拿到损坏 PDF 却静默通过）。
 
-诚实声明：case-01 的 wiki 是同一模型按 SKILL 生成、又由同一份 golden 判分，100% 只证明"结构守纪律"，不证明"提示词有效"。要真实判别力需换真实素材 + 换模型复跑（见 `eval/RESULTS.md` 第五节）。
+诚实声明：case-01 的 wiki 是同一模型按 SKILL 生成、又由同一份 golden 判分，100% 只证明"结构守纪律"，不证明"提示词有效"。要真实判别力需换真实素材 + 换模型复跑（见 `eval/RESULTS.md` 第六节）。
 
 ## 变现结论（已讨论定调）
 
