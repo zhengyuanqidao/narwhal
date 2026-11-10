@@ -22,6 +22,11 @@ dl "https://export.arxiv.org/pdf/1706.03762v7" "05-1706.03762.pdf"
 dl "https://raw.githubusercontent.com/danluu/post-mortems/master/README.md" "06-postmortems-collection.md"
 dl "https://raw.githubusercontent.com/ruanyf/weekly/master/README.md" "07-ruanyf-weekly-README.md"
 dl "https://raw.githubusercontent.com/jgm/pandoc/main/test/docx/inline_formatting.docx" "08-inline_formatting.docx"
+dl "https://raw.githubusercontent.com/apache/poi/trunk/test-data/spreadsheet/SampleSS.xlsx" "09-sample-spreadsheet.xlsx"
+dl "https://raw.githubusercontent.com/apache/poi/trunk/test-data/slideshow/45541_Footer.pptx" "10-sample-slideshow.pptx"
+dl "https://raw.githubusercontent.com/expressjs/express/master/package.json" "11-express-package.json"
+dl "https://raw.githubusercontent.com/actions/starter-workflows/main/ci/node.js.yml" "12-github-actions-node.yml"
+dl "https://raw.githubusercontent.com/python/cpython/main/Lib/test/test_email/data/msg_02.txt" "13-email-sample.eml"
 
 echo "--- 校验（与 MANIFEST 对照）---"
 for f in *; do [ -f "$f" ] && [ "$f" != "fetch.sh" ] && printf "%-34s %s\n" "$f" "$(shasum -a 256 "$f" | cut -c1-16)"; done

@@ -60,7 +60,8 @@
 | `eval/fixtures/archive/` | 10 份模拟散落文档（亚马逊卖家场景），+ 2 份真实噪音（`/root/.nvm/README.md`、`/root/.oh-my-zsh/README.md`） |
 | `eval/fixtures/inject/` | 5 个故意做坏的条目（断链/孤儿/缺 frontmatter/互相矛盾 ×2） |
 | `eval/cases/` | 9 个用例定义，只有 case-01/09 走机械判分，其余是人工/LLM 评审要点 |
-| `eval/fixtures/web/` | **8 份真实网络文件**（2026-11-10 下载，pdf/html/docx/md/csv/txt）+ MANIFEST（URL/哈希/许可）+ fetch.sh |
+| 新发现 | paulgraham.com 的 HTML **哈希漂移**（每次下载 sha256 不同）→ 真实语料比对必须以内容指纹为准；xlsx/pptx 指纹需解 OOXML（sharedStrings/slideN.xml），实现已在 run_eval.py 验证 |
+| `eval/fixtures/web/` | **13 份真实网络文件**（2026-11-10 下载，9 种格式：pdf/html/docx/xlsx/pptx/json/yml/eml/md/csv/txt）+ MANIFEST（URL/哈希/许可）+ fetch.sh |
 | `eval/runs/case-01/wiki` | 基线产物，score **100%**（10/10） |
 | `eval/runs/case-04/wiki` | 反例（注入坏数据），**60%**（4 项 FAIL，doctor 4/4 命中） |
 | `eval/runs/case-09/wiki` | 真实网络语料增量扫描，**100%**（11/11），经验 0 → 入库 0 条 |

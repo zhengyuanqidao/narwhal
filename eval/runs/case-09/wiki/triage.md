@@ -1,7 +1,7 @@
 # 分诊表 · 模式 E（2026-11-10 首轮冷启动 + 2026-11-10 增量扫描真实语料）
 
-> 本轮采集范围（增量）：`eval/fixtures/web/` 8 份**从互联网下载的真实文件**（txt/md/html/csv/pdf/docx 各至少一份）
-> 本轮统计：读 8 份 · 经验 **0** · 参考 3 · 噪音 5 · 入库 **0 条**
+> 本轮采集范围（增量）：`eval/fixtures/web/` 13 份**从互联网下载的真实文件**（txt/md/html/csv/pdf/docx/xlsx/pptx/json/yml/eml 共 9 种格式）
+> 本轮统计：读 13 份 · 经验 **0** · 参考 3 · 噪音 10 · 入库 **0 条**
 > 首轮统计（见下表末段）：读 12 份 · 经验 6 · 参考 3 · 噪音 3
 
 | 文件 | 分诊 | 理由 |
@@ -14,6 +14,11 @@
 | 06-postmortems-collection.md | 参考 | 96KB 工程事故复盘合集——**形式像复盘但不是我的事故**；最容易被误判成经验，明确不入库 |
 | 07-ruanyf-weekly-README.md | 参考 | 科技周刊索引，信息密度高但无个人判断，只作信息源 |
 | 08-inline_formatting.docx | 噪音 | pandoc 排版测试文件，无语义内容 |
+| 09-sample-spreadsheet.xlsx | 噪音 | Excel 测试表格（sharedStrings 为 "Test spreadsheet"），与业务无关 |
+| 10-sample-slideshow.pptx | 噪音 | POI 幻灯片测试文件，无业务语义 |
+| 11-express-package.json | 噪音 | Node 项目依赖清单，纯技术 |
+| 12-github-actions-node.yml | 噪音 | GitHub Actions CI 配置，纯技术 |
+| 13-email-sample.eml | 噪音 | 真实 RFC822 邮件——邮件是"个人文档"高发形式，但这封是无关测试邮件 |
 **首轮（archive 合成语料 + 系统文档）**
 
 | 文件 | 分诊 | 理由 |

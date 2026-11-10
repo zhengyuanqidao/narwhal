@@ -12,24 +12,101 @@
     "note": "真实噪音文件直接引用系统内真实存在的无关 README，不复制进仓库"
   },
   "triage": [
-    { "file": "2025-08-选品复盘-宠物饮水机.md", "label": "经验", "why": "我自己算过的到仓成本与净利压力测试" },
-    { "file": "2025-09-广告周报-W38.md", "label": "经验", "why": "我写的周报，含我的判断原话" },
-    { "file": "2025-10-旺季断货事故复盘.md", "label": "经验", "why": "亲身事故 + 事后核算代价" },
-    { "file": "2025-11-库存周转测算表.csv", "label": "经验", "why": "自己店铺的运营数据" },
-    { "file": "2025-07-团队周会纪要-运营三人组.md", "label": "经验", "why": "团队分工调整的决策与结果" },
-    { "file": "2025-06-新品上架SOP-v2.txt", "label": "经验", "why": "我自己跑出来的上架流程" },
-    { "file": "2025-08-行业报告摘录-宠物用品趋势.md", "label": "参考", "why": "外部报告摘录，非个人验证" },
-    { "file": "2025-08-竞品分析-三家头部拆解.md", "label": "参考", "accept": ["参考", "经验"], "why": "以观察他人为主，夹杂少量我的判断（边界样本）" },
-    { "file": "2025-05-学习笔记-亚马逊广告入门.md", "label": "参考", "why": "公开方法论整理，作者自己都写了'没验证过'（质量红线样本）" },
-    { "file": "2025-04-装修预算清单.md", "label": "噪音", "why": "与业务完全无关" },
-    { "file": "/root/.nvm/README.md", "label": "噪音", "why": "开发工具文档，与业务无关" },
-    { "file": "/root/.oh-my-zsh/README.md", "label": "噪音", "why": "开发工具文档，与业务无关" }
+    {
+      "file": "2025-08-选品复盘-宠物饮水机.md",
+      "label": "经验",
+      "why": "我自己算过的到仓成本与净利压力测试"
+    },
+    {
+      "file": "2025-09-广告周报-W38.md",
+      "label": "经验",
+      "why": "我写的周报，含我的判断原话"
+    },
+    {
+      "file": "2025-10-旺季断货事故复盘.md",
+      "label": "经验",
+      "why": "亲身事故 + 事后核算代价"
+    },
+    {
+      "file": "2025-11-库存周转测算表.csv",
+      "label": "经验",
+      "why": "自己店铺的运营数据"
+    },
+    {
+      "file": "2025-07-团队周会纪要-运营三人组.md",
+      "label": "经验",
+      "why": "团队分工调整的决策与结果"
+    },
+    {
+      "file": "2025-06-新品上架SOP-v2.txt",
+      "label": "经验",
+      "why": "我自己跑出来的上架流程"
+    },
+    {
+      "file": "2025-08-行业报告摘录-宠物用品趋势.md",
+      "label": "参考",
+      "why": "外部报告摘录，非个人验证"
+    },
+    {
+      "file": "2025-08-竞品分析-三家头部拆解.md",
+      "label": "参考",
+      "accept": [
+        "参考",
+        "经验"
+      ],
+      "why": "以观察他人为主，夹杂少量我的判断（边界样本）"
+    },
+    {
+      "file": "2025-05-学习笔记-亚马逊广告入门.md",
+      "label": "参考",
+      "why": "公开方法论整理，作者自己都写了'没验证过'（质量红线样本）"
+    },
+    {
+      "file": "2025-04-装修预算清单.md",
+      "label": "噪音",
+      "why": "与业务完全无关"
+    },
+    {
+      "file": "/root/.nvm/README.md",
+      "label": "噪音",
+      "why": "开发工具文档，与业务无关"
+    },
+    {
+      "file": "/root/.oh-my-zsh/README.md",
+      "label": "噪音",
+      "why": "开发工具文档，与业务无关"
+    }
   ],
   "expected_domains": [
-    { "domain": "选品", "keywords": ["选品"], "min_entries": 1 },
-    { "domain": "广告投放", "keywords": ["广告"], "min_entries": 1 },
-    { "domain": "供应链库存", "keywords": ["供应链", "库存"], "min_entries": 1 },
-    { "domain": "团队协作", "keywords": ["团队"], "min_entries": 1 }
+    {
+      "domain": "选品",
+      "keywords": [
+        "选品"
+      ],
+      "min_entries": 1
+    },
+    {
+      "domain": "广告投放",
+      "keywords": [
+        "广告"
+      ],
+      "min_entries": 1
+    },
+    {
+      "domain": "供应链库存",
+      "keywords": [
+        "供应链",
+        "库存"
+      ],
+      "min_entries": 1
+    },
+    {
+      "domain": "团队协作",
+      "keywords": [
+        "团队"
+      ],
+      "min_entries": 1
+    }
   ],
   "thresholds": {
     "triage_accuracy_min": 0.9,
@@ -46,21 +123,81 @@
   },
   "quality_redline": {
     "note": "通用知识（学习笔记）不得作为高置信条目入库；最多标 confidence:低·外部参考 或直接不收",
-    "forbidden": ["confidence: 高"]
+    "forbidden": [
+      "confidence: 高"
+    ]
   },
   "web": {
     "dir": "eval/fixtures/web",
-    "note": "8 份真实网络文件，全部为外部资料；正确行为是 0 条入库（见 case-09）",
+    "note": "13 份真实网络文件（9 种格式），全部为外部资料；正确行为是 0 条入库（见 case-09）",
     "expect_entries_from_web": 0,
     "triage": [
-      { "file": "01-Python.gitignore.txt", "label": "噪音" },
-      { "file": "02-openapi-3.0.3.md", "label": "噪音" },
-      { "file": "03-paulgraham-greatwork.html", "label": "参考" },
-      { "file": "04-iris.csv", "label": "噪音" },
-      { "file": "05-1706.03762.pdf", "label": "噪音" },
-      { "file": "06-postmortems-collection.md", "label": "参考", "accept": ["参考", "经验"], "why": "形式像复盘但非本人经历，允许边界判断" },
-      { "file": "07-ruanyf-weekly-README.md", "label": "参考" },
-      { "file": "08-inline_formatting.docx", "label": "噪音" }
+      {
+        "file": "01-Python.gitignore.txt",
+        "label": "噪音"
+      },
+      {
+        "file": "02-openapi-3.0.3.md",
+        "label": "噪音"
+      },
+      {
+        "file": "03-paulgraham-greatwork.html",
+        "label": "参考"
+      },
+      {
+        "file": "04-iris.csv",
+        "label": "噪音"
+      },
+      {
+        "file": "05-1706.03762.pdf",
+        "label": "噪音"
+      },
+      {
+        "file": "06-postmortems-collection.md",
+        "label": "参考",
+        "accept": [
+          "参考",
+          "经验"
+        ],
+        "why": "形式像复盘但非本人经历，允许边界判断"
+      },
+      {
+        "file": "07-ruanyf-weekly-README.md",
+        "label": "参考"
+      },
+      {
+        "file": "08-inline_formatting.docx",
+        "label": "噪音"
+      },
+      {
+        "file": "09-sample-spreadsheet.xlsx",
+        "label": "噪音",
+        "why": "POI 的 Excel 测试表格（'Test spreadsheet'），与业务无关"
+      },
+      {
+        "file": "10-sample-slideshow.pptx",
+        "label": "噪音",
+        "why": "POI 幻灯片测试文件，无业务语义"
+      },
+      {
+        "file": "11-express-package.json",
+        "label": "噪音",
+        "why": "Node 项目依赖清单，纯技术"
+      },
+      {
+        "file": "12-github-actions-node.yml",
+        "label": "噪音",
+        "why": "CI 工作流配置，纯技术"
+      },
+      {
+        "file": "13-email-sample.eml",
+        "label": "噪音",
+        "accept": [
+          "噪音",
+          "参考"
+        ],
+        "why": "真实 RFC822 邮件（CPython 测试数据），形式上是'我的文档'高发区但内容为无关测试邮件"
+      }
     ]
   }
 }

@@ -15,7 +15,7 @@ eval/
 ├── fixtures/
 │   ├── archive/         # 12 份模拟散落文档（6 经验 / 3 参考 / 1 噪音 + 2 真实噪音）
 │   ├── inject/          # 故意做坏的条目，用于体检（case-04）
-│   └── web/             # 8 份真实网络文件 + MANIFEST.md + fetch.sh（二进制不入库）
+│   └── web/             # 13 份真实网络文件（9 种格式）+ MANIFEST.md + fetch.sh（二进制不入库）
 ├── cases/               # 8 个评测用例定义（输入 / 期望 / 判分）
 ├── RESULTS.md           # 最近一次实测结果（基线 + 反例对照）
 └── runs/<case>/wiki/    # 评测产物：已提交 case-01（基线）与 case-04（反例）
@@ -80,7 +80,7 @@ python3 eval/run_eval.py eval/runs/case-01/wiki --json
 | case-06 | 质量红线 | 纯通用知识文档 | 不得以 `confidence: 高` 入库 |
 | case-07 | raw 不可变 | 改写已有 raw 的指令 | 必须拒绝改写 |
 | case-08 | 会话恢复仪式 | 已有库 + 冷启动 | 是否先读 SCHEMA/HOME/log |
-| case-09 | 真实网络语料（反囤积/反搬运） | `fixtures/web/` 8 份真实下载文件 | 机械第 11 项：分诊 + 40 字符指纹防搬运 |
+| case-09 | 真实网络语料（反囤积/反搬运） | `fixtures/web/` 13 份真实下载文件（9 种格式） | 机械第 11 项：分诊 + 40 字符指纹防搬运 |
 
 ## 当前状态（2026-11-10）
 
@@ -88,7 +88,7 @@ python3 eval/run_eval.py eval/runs/case-01/wiki --json
 |---|---|---|
 | case-01 基线（模式 E 全流程） | `run_eval.py eval/runs/case-01/wiki` | **100%** / 10 项全 PASS / exit 0 |
 | case-04 反例（注入坏数据） | `run_eval.py eval/runs/case-04/wiki` | **60%** / 4 项 FAIL / exit 1 |
-| case-09 真实网络语料（8 份真实下载文件） | `run_eval.py eval/runs/case-09/wiki` | **100%** / 11 项全 PASS / exit 0 |
+| case-09 真实网络语料（13 份真实下载文件） | `run_eval.py eval/runs/case-09/wiki` | **100%** / 11 项全 PASS / exit 0 |
 | case-09-fail 反例（抄网上原句进条目） | `run_eval.py eval/runs/case-09-fail/wiki` | **72.73%** / 第 11 项抓到搬运 / exit 1 |
 
 两个数字合起来才有意义：基线 100% 说明阈值没定得过严，反例 60% 说明检查项真能抓到坏产物（注入的 4 个病灶被 doctor 4/4 命中）。

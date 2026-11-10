@@ -57,25 +57,34 @@ python3 eval/run_eval.py eval/runs/case-01/wiki
 
 ## 五、真实网络语料：case-09（用网上下载的文件测）
 
-前几轮用的都是我合成的素材，说服力不够。这一轮**从互联网真实下载 8 份文件**（`eval/fixtures/web/`，列表与哈希见该目录 `MANIFEST.md`），覆盖六种格式：
+前几轮用的都是我合成的素材，说服力不够。这一轮**从互联网真实下载 13 份文件**（`eval/fixtures/web/`，列表与哈希见该目录 `MANIFEST.md`），覆盖九种格式：
 
 | 格式 | 文件 | 解析方式 | 实测 |
 |---|---|---|---|
 | pdf | arXiv 1706.03762《Attention Is All You Need》2.2MB | `pdftotext` | 40,074 字符可提取 |
-| html | Paul Graham《How to Do Great Work》80KB | 去 script/标签 | 正常 |
+| html | Paul Graham《How to Do Great Work》80KB | 去 script/标签 | 正常（⚠ 该站 HTML 每次有细微差异，**哈希漂移**） |
 | docx | pandoc 排版测试文件 | 解 `word/document.xml` | 正常 |
-| md | OpenAPI 3.0.3 规范 124KB / danluu 事故复盘合集 96KB / 阮一峰周刊 32KB | 直读 | 正常 |
-| csv | seaborn iris 数据集 | 直读 | 正常 |
-| txt | github/gitignore Python 规则 | 直读 | 正常 |
+| xlsx | POI SampleSS.xlsx 12KB | 解 `xl/sharedStrings.xml` | 正常（抽出 "Test spreadsheet/2nd row/…"） |
+| pptx | POI 45541_Footer.pptx 304KB | 逐张 `ppt/slides/slideN.xml` | 正常 |
+| json | expressjs/express package.json | 直读 | 正常 |
+| yml | GitHub Actions node.js 工作流 | 直读 | 正常 |
+| eml | CPython msg_02.txt（RFC822） | 直读 | 正常 |
+| md | OpenAPI 3.0.3 124KB / danluu 复盘合集 96KB / 阮一峰周刊 32KB | 直读 | 正常 |
+| csv / txt | iris 数据集 / Python.gitignore | 直读 | 正常 |
 
-**分诊结果：经验 0 · 参考 3 · 噪音 5 → 入库 0 条**（条目数保持 7，领域保持 4，未新建 MOC）。
+**分诊结果：经验 0 · 参考 3 · 噪音 10 → 入库 0 条**（条目数保持 7，领域保持 4，未新建 MOC）。
 
 | # | 检查 | 结果 |
 |---|---|---|
 | 1~10 | 同基线 | 全 PASS |
-| 11 | 真实语料红线（分诊 + 不搬运） | PASS：8 份全部分诊正确，条目中未检出外部文本指纹 |
+| 11 | 真实语料红线（分诊 + 不搬运） | PASS：13 份全部分诊正确，条目中未检出外部文本指纹 |
 
 **score = 100.00%，exit 0。**
+
+### 真实语料带来的两个工程发现
+
+1. **HTML 内容哈希会漂移**：paulgraham.com 每次返回的 HTML 有细微差异（两次下载 sha256 不同），所以"真实语料指纹比对"必须以**内容**为准、不能以哈希为准；也说明"raw 不可变"在网页类源材料上要以**抓取时刻的副本**为锚点。
+2. **xlsx/pptx 的指纹检测要靠 OOXML 抽取**：第 11 项对 xlsx 解 `xl/sharedStrings.xml`、对 pptx 逐张解 `slideN.xml`，路径都验证过；这也意味着 SKILL 模式 E 声称的"二进制文档用对应工具解析"在 eval 层有了第一组可回归的实现参照。
 
 ### 反例对照：case-09-fail（模拟"把网上文章抄进条目"）
 
@@ -93,7 +102,7 @@ score = 72.73%，exit 1
 
 ### 这一轮暴露的三个 SKILL 缺口
 
-1. **零经验语料没有处置规则**。SKILL 要求"聚类出 3~7 个领域"，但如果 8 份素材里一条经验都没有，正确行为应该是**拒绝建库并给统计报告**——现有 SKILL 没写这一条，agent 很容易为了"有产出"硬建几个空领域。
+1. **零经验语料没有处置规则**。SKILL 要求"聚类出 3~7 个领域"，但如果 13 份素材里一条经验都没有，正确行为应该是**拒绝建库并给统计报告**——现有 SKILL 没写这一条，agent 很容易为了"有产出"硬建几个空领域。
 2. **"参考类"是否进 `raw/` 未定义**。本次判断为**不进**（raw 只存我自己的源材料，外部资料进 raw 会污染溯源），但这是我的推断，不是规范。
 3. **采集容错未要求**。第一次拉 arXiv 直链拿到的是损坏 PDF（`pdfinfo` 报 Couldn't find trailer dictionary，`pdftotext` 输出 0 字符），换 `export.arxiv.org` 才正常。采集环节应当把"解析出 0 字符即视为失败并报告"写进流程，否则坏文件会被静默跳过。
 

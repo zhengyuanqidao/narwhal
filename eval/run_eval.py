@@ -264,7 +264,7 @@ def check_forge(root: Path, rep: Report):
 
 
 def extract_text(p: Path) -> str:
-    """把真实网络文件抽成纯文本（覆盖 6 种格式）。"""
+    """把真实网络文件抽成纯文本（覆盖 9 种格式）。"""
     suf = p.suffix.lower()
     try:
         if suf == ".pdf":
@@ -275,6 +275,19 @@ def extract_text(p: Path) -> str:
             with zipfile.ZipFile(p) as z:
                 x = z.read("word/document.xml").decode("utf-8", "replace")
             return re.sub(r"<[^>]+>", " ", x)
+        if suf == ".xlsx":
+            import zipfile
+            with zipfile.ZipFile(p) as z:
+                x = z.read("xl/sharedStrings.xml").decode("utf-8", "replace")
+            return re.sub(r"<[^>]+>", " ", x)
+        if suf == ".pptx":
+            import zipfile
+            out = []
+            with zipfile.ZipFile(p) as z:
+                for n in sorted(z.namelist()):
+                    if re.fullmatch(r"ppt/slides/slide\d+\.xml", n):
+                        out.append(re.sub(r"<[^>]+>", " ", z.read(n).decode("utf-8", "replace")))
+            return "\n".join(out)
         if suf in (".html", ".htm"):
             h = read(p)
             h = re.sub(r"<script.*?</script>|<style.*?</style>", " ", h, flags=re.S)
