@@ -78,7 +78,7 @@
 4. **"参考类"能否进 `raw/` 未定义**（本次实践：不进，raw 只存自己的源材料）；
 5. **采集容错未要求**——解析出 0 字符应视为失败并报告（arxiv 直链那次拿到损坏 PDF 却静默通过）。
 
-**检索栈 v1.1 定稿（有实验数据支撑，见 eval/RESULTS.md 第七节）**：BM25 零依赖（hit@3 8/9，胜过本地 embedding 的 7/9）+ 图索引 + frontmatter `aka` 写入时锚点（修复"词汇不相交"的模糊查询）；embedding 只做可选插件。注意 pyenv 3.11 与系统 python3.12 并存，装 Python 包必须用 `python3 -m pip`（sudo pip3 会装到 3.12 导致 import 失败）；HF 下载需 `SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt`。
+**检索栈 v1.1 定稿（有实验数据支撑，见 eval/RESULTS.md 第七节）**：BM25 零依赖（hit@3 8/9，胜过本地 embedding 的 7/9）+ 图索引 + frontmatter `aka` 写入时锚点（修复"词汇不相交"的模糊查询）；embedding 只做可选插件；第八节规格阶梯实验（bge-small 7/9 → jina 9/9 → Qwen3-0.6B 9/9+hit@1 7/9 → e5-large 2.24GB 反而垫底 7/9）确认规格影响非单调，插件推荐模型定为 Qwen3-Embedding-0.6B-Q，启用前须在真实语料复测。注意 pyenv 3.11 与系统 python3.12 并存，装 Python 包必须用 `python3 -m pip`（sudo pip3 会装到 3.12 导致 import 失败）；HF 下载需 `SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt`。
 
 诚实声明：case-01 的 wiki 是同一模型按 SKILL 生成、又由同一份 golden 判分，100% 只证明"结构守纪律"，不证明"提示词有效"。要真实判别力需换真实素材 + 换模型复跑（见 `eval/RESULTS.md` 第六节）。
 
