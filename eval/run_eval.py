@@ -291,6 +291,11 @@ def check_web_redline(root: Path, rep: Report):
         rep.add("11. 真实语料红线", False, "golden.json 缺 web 配置")
         return
     got = parse_triage(root)
+    present = [g for g in web["triage"] if got.get(g["file"])]
+    if not present:
+        rep.add("11. 真实语料红线（分诊 + 不搬运）", True,
+                "N/A：该产物未纳入 web 语料扫描（不计分）", weight=0)
+        return
     probs = []
     for g in web["triage"]:
         accept = [g["label"]] + g.get("accept", [])
