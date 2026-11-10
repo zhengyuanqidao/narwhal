@@ -28,7 +28,7 @@
 
 - 仓库：**https://github.com/lixh017/narwhal**（public，MIT，用户 lixh017 / ethan）
 - **已同步到远程**：`main` HEAD = `ae85be5`（docs: 添加项目记忆文档与 .gitignore）+ tag `v1.0.0`（`bbcbb59`）
-- **本地未推送**：`ac223a0` docs: 添加演示样例库与 README 效果示例（18 files, +611）
+- **本地未推送**：用 `git log --oneline origin/main..HEAD` 查看（2026-11-10 16:05 时为 3 个 commit：演示库 + 记忆更新）
 - 推送命令：`git push github main --tags`（远程名为 `github` 时；本沙箱 clone 后 remote 叫 `origin`，用 `git push origin main --tags`）
 - ⚠️ 推送需认证：CodeBuddy 连接器 Token 只读（建仓/push 均 403）。方案：
   1. Device Flow（上次成功用过）：`curl -s -X POST https://github.com/login/device/code -H "Accept: application/json" -d "client_id=178c6fc778ccc68e1d6a&scope=repo"` → 给用户用户码 → 轮询 access_token
