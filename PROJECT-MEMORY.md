@@ -49,6 +49,28 @@
   - 每个条目/案例至少要有一条出链或入链，否则算孤儿
   - moc 文件允许无 frontmatter，其它文档必须有
 
+## EVAL 评测集（2026-11-10 新增）
+
+项目现在有回归测试了：`eval/`
+
+| 内容 | 说明 |
+|---|---|
+| `eval/golden.json` | 金标准：12 份 fixture 的分诊标签、4 个期望领域、各项阈值 |
+| `eval/run_eval.py` | 机械判分器，10 项检查（分诊准确率/raw sha256/噪音隔离/元数据/doctor/MOC/索引/log/门槛），输出 score + 退出码可直接接 CI |
+| `eval/fixtures/archive/` | 10 份模拟散落文档（亚马逊卖家场景），+ 2 份真实噪音（`/root/.nvm/README.md`、`/root/.oh-my-zsh/README.md`） |
+| `eval/fixtures/inject/` | 5 个故意做坏的条目（断链/孤儿/缺 frontmatter/互相矛盾 ×2） |
+| `eval/cases/` | 8 个用例定义，只有 case-01 走机械判分，其余 7 个是人工/LLM 评审要点 |
+| `eval/runs/case-01/wiki` | 基线产物，score **100%**（10/10 PASS） |
+| `eval/runs/case-04/wiki` | 反例产物（注入坏数据），score **60%**（4 项 FAIL，doctor 4/4 命中） |
+
+运行：`python3 eval/run_eval.py eval/runs/case-01/wiki`（退出码 0 通过 / 1 未通过 / 2 用法错误）。
+
+评测暴露的两个 SKILL 缺口（v1.1 候选）：
+1. **模式 E 应产出 `wiki/triage.md`**——现在分诊只在对话里，无法审计与回归；
+2. **`methods/` 目录边界不清**——实战中 SOP 全落进 `entries/` 的 method 类型，`methods/` 零文件，要么说清边界要么合并。
+
+诚实声明：case-01 的 wiki 是同一模型按 SKILL 生成、又由同一份 golden 判分，100% 只证明"结构守纪律"，不证明"提示词有效"。要真实判别力需换真实素材 + 换模型复跑（见 `eval/RESULTS.md` 第五节）。
+
 ## 变现结论（已讨论定调）
 
 卖文件不成立；正解是**"骨架开源（已做），判断力闭源"**：
@@ -63,7 +85,11 @@
 - [x] 推送 CHANGELOG commit + v1.0.0 标签（上一代沙箱已完成，远程已确认）
 - [x] narwhal-repo 加 `.gitignore`（含 `wiki/`）
 - [x] README 补效果演示 —— 已加"效果示例"章节 + `examples/demo-wiki/` 16 个文件（文本版，0 断链）
-- [ ] **推送 `ac223a0`**（等认证）
+- [ ] **推送 `ac223a0` 起的本地 commit**（等认证）
+- [x] **建立 eval 评测集**：8 用例 + 10 项机械检查 + 基线/反例双跑（2026-11-10）
+- [ ] 用**真实用户文档**跑 eval（换料），看分诊准确率是否仍 ≥90%
+- [ ] **换模型/换会话复跑** case-01（换手），比较两份产物差异
+- [ ] v1.1 候选：模式 E 增加 `triage.md` 产物；澄清 `methods/` 边界；把 eval score ≥90% 设为发版门槛
 - [ ] README 加截图/GIF 版演示（文本版已有，视觉版待做：把 demo-wiki 渲染成 HTML 截图）
 - [ ] 提交 skills.sh、TypingMind、Skillselion 收录（需账号；可先写投放文案与提交清单）
 - [ ] **第一次真实深潜**：用户提供自己的散落文档，跑模式 E 建真实领域库
