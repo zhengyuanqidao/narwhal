@@ -1,6 +1,6 @@
 # Narwhal / WorkBuddy 产品矩阵与运营路线（v0.1）
 > ⚠️ 平台事实以 [PLATFORM-AUDIT.md](../../workbuddy-assets/docs/PLATFORM-AUDIT.md) 为准（2026-11-12 系统核查）：**价格可改（每年限 N 次）**，锁死的只是付费方式；收费资格要求已有 1 个过审资产。本文旧结论已修订。
-> ⚠️ **路线以 [ROADMAP.md](../../workbuddy-assets/docs/ROADMAP.md) 为准**（2026-11-12 重置，决策门驱动）：本文§四 四波 W1–W4已作废，降级为历史参考。
+> ⚠️ **路线以 [ROADMAP.md](../../workbuddy-assets/docs/ROADMAP.md) 为准**（2026-11-12 重置，决策门驱动）：本文§三 四波 W1–W4 与 §八 本周动作已作废，降级为历史参考。
 
 > 目标：以公司主体在 WorkBuddy 上构建「**1 个免费流量池 + 3 条付费产品线**」的资产矩阵，并把上架流程本身做成工程。
 > 本文承接 `GO-TO-MARKET.md`（单资产打法）与 `POSITIONING.md`（品类定位），回答"接下来发什么、怎么发、怎么运营"。
