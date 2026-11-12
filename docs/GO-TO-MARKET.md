@@ -84,23 +84,28 @@
 ```yaml
 ---
 name: narwhal
-display_name: 知识库编译
-display_name_en: Wiki Compiler
-description: 扫描本地文档，把散落经验编译成带边界与反例的条目，再生成可直接执行的 SOP / CHECKLIST / PLAYBOOK
-description_zh: 把散落文档编译成 AI 与新人能直接照做的知识库
-description_en: Compile scattered documents into an executable knowledge base
+display_name: 文档变知识库
+display_name_en: Docs to Wiki
+description: 把散落在本地和云端的个人经验、对话、笔记、文档自动扫描、按领域聚类，沉淀为多个结构化领域知识库（个人 wiki），并可将领域知识库编译输出为该领域的工作技能（SOP/检查清单/实战手册/Skill）。当用户想"建立知识库/个人 wiki/专家体系"、"扫描我的文档"、"沉淀经验"、"整理我的方法论"、"深潜/ExpertLoop"、想要某领域的"SOP/工作手册/技能包"时使用。
+description_zh: 把会议纪要、方案、复盘变成带数字和反例、能直接照做的条目
+description_en: Turn meeting notes, plans and post-mortems into executable entries with numbers and counter-examples
 version: 1.0.0
-author: <作者名>
+author: lixh017
 examples_zh:
-  - "把这个文件夹里的文档整理成能用的知识库"
-  - "检查我的知识库哪些条目太空洞"
-  - "把这份会议纪要变成一条可复用的经验"
+  - "把这个文件夹里的会议纪要和方案，变成一页能查的知识库"
+  - "检查我的知识库哪些条目太空洞、哪些已经过期"
+  - "把这份复盘变成一条带数字和反例、能直接照做的经验"
 examples_en:
-  - "Turn the docs in this folder into a usable knowledge base"
-  - "Audit my knowledge base for hollow entries"
-  - "Turn this meeting note into a reusable piece of expertise"
+  - "Turn the meeting notes and plans in this folder into a searchable knowledge base"
+  - "Audit my knowledge base for hollow or outdated entries"
+  - "Turn this post-mortem into a reusable entry with numbers and counter-examples"
 ---
 ```
+
+> **2026-11-12 定稿（Owner 拍板）**：`display_name = 文档变知识库`。选它的理由是免费技能的 KPI 是安装量/搜索覆盖（"文档""知识库"都是高频搜索词），而「编译」是自造词、留给付费专家「知识库编译师」立品类。
+> 注意 `description` 保留**触发词式**原文——这是本地 Skill 供模型判断何时加载的核心，不能删；平台口径的「一句话能力描述」由 `sync_narwhal.py` 在同步到市场壳时覆盖，内核仍是唯一事实来源。
+> `author` 当前用 git 身份 `lixh017`；若开放平台开发者名称不同，提交前替换并 `bump patch`。
+> 诚实风险：`文档变知识库` 会引来「以为是归档工具」的用户，**靠 `description_zh` 首句区分「整理文件」与「产出判断」**，不靠改名。
 
 > 三个 `examples` 会显示在详情页的「试试这样用」，**这是转化率最高的两块位置之一**（另一块是首图描述）。要写用户真会说的话，不要写功能名。
 
