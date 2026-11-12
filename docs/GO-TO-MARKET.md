@@ -1,5 +1,6 @@
 # Narwhal 上架与获客计划（v0.1）
 > ⚠️ 平台事实以 [PLATFORM-AUDIT.md](../../workbuddy-assets/docs/PLATFORM-AUDIT.md) 为准（2026-11-12 系统核查）：**价格可改（每年限 N 次）**，锁死的只是付费方式；费率 1% + 0.6%；收费资格要求已有 1 个过审资产。本文旧结论已修订。
+> ⚠️ **路线以 [ROADMAP.md](../../workbuddy-assets/docs/ROADMAP.md) 为准**（2026-11-12 重置，决策门驱动）：本文§七 P0-a/b/c已作废，降级为历史参考。
 
 > 本文替代 `POSITIONING.md` 第六节的 P0 阶段：**先把分发做出来，再谈后端收入。**
 > 所有平台约束均来自官方开放平台文档（`open.workbuddy.cn/docs/expert`、`/docs/skill`、`/docs/monetization`），已核实项标注 ✅，需客户端实测项标注 ⚠️。
@@ -250,6 +251,7 @@ knowledge-compiler/
 探针新判读口径：若本地路径不可写，付费专家改成「云端生成 → 导出 zip → 用户下载落本地」，仍然成立，但 `displayDescription` 里「支持增量更新」这句要改口径。
 
 ## 七、修订后的路线（覆盖 POSITIONING 第六节 P0）
+> ⚠️ 本节路线已由 [ROADMAP.md](../../workbuddy-assets/docs/ROADMAP.md) 取代（2026-11-12），保留作历史参考，不再作为执行依据。
 
 | 阶段 | 做什么 | 通过标准 |
 |---|---|---|
