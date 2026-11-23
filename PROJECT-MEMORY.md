@@ -26,7 +26,7 @@
 
 ## GitHub 状态
 
-- 仓库：**https://github.com/lixh017/narwhal**（public，MIT，用户 lixh017 / ethan）
+- 仓库：**https://github.com/zhengyuanqidao/narwhal**（public，MIT，账号 zhengyuanqidao / 署名 zyqd）
 - **已同步到远程**：`main` HEAD = `ae85be5`（docs: 添加项目记忆文档与 .gitignore）+ tag `v1.0.0`（`bbcbb59`）
 - **本地未推送**：用 `git log --oneline origin/main..HEAD` 查看（2026-11-10 16:05 时为 3 个 commit：演示库 + 记忆更新）
 - 推送命令：`git push github main --tags`（远程名为 `github` 时；本沙箱 clone 后 remote 叫 `origin`，用 `git push origin main --tags`）
@@ -131,7 +131,7 @@
 
 ## 环境备忘
 
-- 用户身份：GitHub lixh017（ethan）；当前项目：ExpertLoop · Narwhal
-- git 仓库身份已配置：`lixh017` / `lixh017@users.noreply.github.com`
+- 用户身份：GitHub zhengyuanqidao（署名 zyqd）；当前项目：ExpertLoop · Narwhal
+- git 仓库身份已配置：`zyqd` / `zhengyuanqidao@users.noreply.github.com`（2026-11-23 全历史重写）
 - 用户语言：简体中文；偏好：直接给结论+行动建议，喜欢先对比再决策
 - 上一代沙箱的 demo 数据（`/tmp/demo-src/`）已丢；当前 demo 内容为本次重建的**模拟数据**（私域运营 + 直播电商：6 条目 + 2 案例 + 2 raw），标注在 SCHEMA 与 EXPERT-PROFILE 顶部

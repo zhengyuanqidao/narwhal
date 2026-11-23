@@ -6,7 +6,7 @@ description: 把散落在本地和云端的个人经验、对话、笔记、文�
 description_zh: 把会议纪要、方案、复盘变成带数字和反例、能直接照做的条目
 description_en: Turn meeting notes, plans and post-mortems into executable entries with numbers and counter-examples
 version: 1.0.0
-author: lixh017
+author: zyqd
 examples_zh:
   - "把这个文件夹里的会议纪要和方案，变成一页能查的知识库"
   - "检查我的知识库哪些条目太空洞、哪些已经过期"
