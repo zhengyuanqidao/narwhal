@@ -5,7 +5,7 @@ display_name_en: Docs to Wiki
 description: 把散落在本地和云端的个人经验、对话、笔记、文档自动扫描、按领域聚类，沉淀为多个结构化领域知识库（个人 wiki），并可将领域知识库编译输出为该领域的工作技能（SOP/检查清单/实战手册/Skill）。当用户想"建立知识库/个人 wiki/专家体系"、"扫描我的文档"、"沉淀经验"、"整理我的方法论"、"深潜/ExpertLoop"、想要某领域的"SOP/工作手册/技能包"时使用。
 description_zh: 把会议纪要、方案、复盘变成带数字和反例、能直接照做的条目
 description_en: Turn meeting notes, plans and post-mortems into executable entries with numbers and counter-examples
-version: 1.0.2
+version: 1.1.0
 author: zyqd
 examples_zh:
   - "把这个文件夹里的会议纪要和方案，变成一页能查的知识库"
@@ -197,9 +197,10 @@ python3 scripts/wiki_version.py <wiki> status                  # 版本 / 待办
 用户说"体检/检查知识库/lint"，或每次大额入库后主动建议：
 
 1. 运行 `scripts/wiki_tool.py doctor <wiki根目录>`：断链、孤儿条目、缺失元数据。
-2. **矛盾检测**（脚本之外，agent 判断）：扫描同领域条目，若两条结论互相冲突，在两条条目中互相标注 `> ⚠️ 与 [[对方条目]] 存在矛盾：……` 并提交用户裁决。
-3. **覆盖缺口**：对照 OPEN-QUESTIONS.md 与 MOC 中的"待深潜"，向用户报告哪些领域长期没有新条目。
-4. 体检结果与修复动作记入 log.md。
+2. 运行 `scripts/report.py <wiki根目录>`：内容层五项指标（覆盖率 / 溯源率 / 孤儿率 / 重复率 / 反例密度），产出可签字的验收报告。**交付前必须全 PASS，不达标先修再交**；报告须显式列出未覆盖章节，不许只说"全部达标"。
+3. **矛盾检测**（脚本之外，agent 判断）：扫描同领域条目，若两条结论互相冲突，在两条条目中互相标注 `> ⚠️ 与 [[对方条目]] 存在矛盾：……` 并提交用户裁决。
+4. **覆盖缺口**：对照 OPEN-QUESTIONS.md 与 MOC 中的"待深潜"，向用户报告哪些领域长期没有新条目。
+5. 体检结果与修复动作记入 log.md。
 
 ### 模式 E：全域扫描（discover）
 
@@ -231,6 +232,23 @@ python3 scripts/wiki_version.py <wiki> status                  # 版本 / 待办
 纪律：
 - 单次扫描最多精读 20 份文件，超出的先列清单让用户排优先级，防止上下文爆炸。
 - 扫描结束必须给统计报告：文件来源分布、领域聚类结果、入库数量、建议的下一个深潜主题。
+
+### 模式 F：交付导出（export）
+
+用户说"导出/给 RAG 用/按部门分开/交付给客户"时：
+
+1. **先验收，不达标不导出**：
+   - `python3 scripts/wiki_tool.py doctor <wiki根目录>` → 必须 0 问题
+   - `python3 scripts/report.py <wiki根目录>` → 五项内容层指标必须全 PASS
+2. **人读版**：`python3 scripts/export.py <wiki> --format human --out <目录>`
+3. **RAG 入库版**：`python3 scripts/export.py <wiki> --format rag --out <目录> --max-chars 500`
+   - 按 `##` 小节切 chunk，每 chunk 自带 `[title]/[section]/[type]/[confidence]/[source]` 元数据
+   - **反例段必须独立成 chunk**——否则检索时边界条件会被正文淹没，这是 RAG 版和 human 版最实质的区别
+4. **按部门/密级分开交付**：条目 frontmatter 增 `scope`、`owner`，再 `--split-scope` 导出到 `<out>/<scope>/`，无 scope 的进 `_shared/`。
+   **只做标签与切分，不做运行时鉴权**——鉴权属系统层，不是本技能的职责，硬做会把工具变成集成商项目。
+5. 交付三件齐备：`VERSION`（`wiki_version.py bump`）+ `CHANGELOG.md` + 验收报告。
+
+注意：report.py 的覆盖率**排除目录/致谢/参考这类结构性章节**（它们不是知识单元）；英文按词匹配、中文按字符 2-gram，不要用字符 2-gram 匹配英文——那样任何文本都会 100% 命中，指标等于失效。
 
 ## 质量红线
 
