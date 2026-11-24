@@ -6,8 +6,10 @@ eval/fixtures/web/*
 !eval/fixtures/web/MANIFEST.md
 !eval/fixtures/web/fetch.sh
 
-# run.py 的一次性演示成品：可随时用一条命令再生，不入库（OPC：产物不固化）
+# 一次性演示成品：可随时用一条命令再生，不入库（OPC：产物不固化）
+# 注意 eval/runs/<case>/wiki/dist/ 多一层目录，需单独列规则
 eval/runs/*/dist/
+eval/runs/*/wiki/dist/
 eval/runs/*/dist.zip
 __pycache__/
 *.pyc

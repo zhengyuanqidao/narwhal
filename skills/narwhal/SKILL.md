@@ -2,17 +2,19 @@
 name: narwhal
 display_name: 文档变知识库
 display_name_en: Docs to Wiki
-description: 把散落在本地和云端的个人经验、对话、笔记、文档自动扫描、按领域聚类，沉淀为多个结构化领域知识库（个人 wiki），并可将领域知识库编译输出为该领域的工作技能（SOP/检查清单/实战手册/Skill）。当用户想"建立知识库/个人 wiki/专家体系"、"扫描我的文档"、"沉淀经验"、"整理我的方法论"、"深潜/ExpertLoop"、想要某领域的"SOP/工作手册/技能包"时使用。
+description: 把散落在本地和云端的个人经验、对话、笔记、文档自动扫描、按领域聚类，沉淀为多个结构化领域知识库（个人 wiki），并可将领域知识库编译输出为该领域的工作技能（SOP/检查清单/实战手册/Skill）。当用户想"建立知识库/个人 wiki/专家体系"、"扫描我的文档"、"沉淀经验"、"整理我的方法论"、"深潜/ExpertLoop"、想要某领域的"SOP/工作手册/技能包"、或已有知识库"又加了新文件/接着更新/别重做"时使用。
 description_zh: 把会议纪要、方案、复盘变成带数字和反例、能直接照做的条目
 description_en: Turn meeting notes, plans and post-mortems into executable entries with numbers and counter-examples
-version: 1.2.2
+version: 1.2.3
 author: zyqd
 examples_zh:
   - "把这个文件夹里的会议纪要和方案，变成一页能查的知识库"
+  - "我又放了几份新文档，接着更新知识库，别重做"
   - "检查我的知识库哪些条目太空洞、哪些已经过期"
   - "把这份复盘变成一条带数字和反例、能直接照做的经验"
 examples_en:
   - "Turn the meeting notes and plans in this folder into a searchable knowledge base"
+  - "I added new files — update the existing wiki incrementally, do not rebuild it"
   - "Audit my knowledge base for hollow or outdated entries"
   - "Turn this post-mortem into a reusable entry with numbers and counter-examples"
 ---
@@ -161,6 +163,29 @@ python3 scripts/wiki_version.py <wiki> status                  # 版本 / 待办
 - `minor`：新增条目/案例/领域，重新编译产物
 - `major`：目录结构、SCHEMA 约定变更
 
+### 再次投料的标准动作（第二次及以后）
+
+用户说「又加了新文件」「接着更新」「别重做」时，**走增量，不得走模式 E 重建**。零脚本版对应 §模式 G，两者规矩一致。
+
+```bash
+python3 scripts/wiki_version.py <wiki> diff      # ① 先看本次增量，不改任何文件
+python3 scripts/run.py <wiki> --title "标题" --by "落款" --zip   # ③ 全量重新收尾
+python3 scripts/wiki_version.py <wiki> bump minor --note "新增 N 份材料"   # ④ 推进版本
+```
+
+| 步骤 | 动作 |
+|---|---|
+| ① | 先做 orientation（读 SCHEMA/HOME/log），再 `diff` 圈出新增/修改/删除及其 `kind`（微调/部分重写/重写） |
+| ② | 按模式 B **只处理新增与受影响条目**：新文件归档 `raw/`；同名改动登记 `xxx.v2.md` 并把 `source` 指过去；消失的文件只把派生条目标 `stale`、不自动删；`human-edit` 条目不覆盖。旧条目一律不动 |
+| ③ | `run.py` 重新跑 doctor→report→human/rag 双导出→SHARE.md/index.html→MANIFEST→zip。**`dist/` 必须随每次增量刷新**，否则转发页还是上一版 |
+| ④ | `bump minor`（新增条目/领域）或 `bump patch`（仅局部修订），写清「本次比上次好在哪」 |
+| ⑤ | `log.md` 追加一行：`- YYYY-MM-DD | 增量 | 新增 N、更新 M、stale K、vX.Y.Z` |
+
+三条硬规矩：**不重建 `wiki/` 目录、不重新判定领域、不覆盖人工修改过的条目**。
+回话只说四件事：读了哪几份、新增/更新了哪些条目、有无 `stale`、版本号从多少到多少——不要求用户重述需求，也不列清单让人排优先级。
+
+> 换机或只剩 `wiki/` 目录时同样适用：orientation 读的是 `wiki/` 内三个入口文件，不依赖原始素材文件夹是否还在。
+
 ## 工作流
 
 ### 模式 A：初始化（cold start）
@@ -206,7 +231,7 @@ python3 scripts/wiki_version.py <wiki> status                  # 版本 / 待办
 
 ### 模式 E：全域扫描（discover）
 
-用户说"扫描我的资料/自动发现/帮我建领域库"时，从散落文档自动建领域知识库：
+用户说"扫描我的资料/自动发现/帮我建领域库"时，从散落文档自动建领域知识库。**已有库追加新材料时不要走本模式**——改走上方「再次投料的标准动作」，否则会重新判定领域、把已有条目重写一遍。
 
 **1. 采集**（按顺序扫描，找到什么读什么）：
 - 本地：用户指定目录、`/root/uploads/`（用户上传）、`/workspace/`（工作区文档）。
@@ -272,6 +297,7 @@ python3 scripts/run.py <wiki根目录> --title "标题" --by "落款" --zip
 - 每次更新 HOME.md 的"最近更新"区块。
 - 每次交付前必须 `wiki_version.py bump`，交付物里带 `VERSION` 与 `CHANGELOG.md`——客户要能回答"这次的库比上次好在哪"。
 - 不要因为一次微改就重跑整条：先看 `diff` 的相似度判定，≥90% 只改局部。
+- **已有库收到新材料一律走增量**（见「再次投料的标准动作」）：禁止重建目录、重新判定领域、全量重写旧条目、覆盖 `human-edit`；每次增量后必须用 `run.py` 刷新 `dist/`。
 
 ## 写作风格
 
