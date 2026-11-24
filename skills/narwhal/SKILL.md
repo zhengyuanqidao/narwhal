@@ -5,7 +5,7 @@ display_name_en: Docs to Wiki
 description: 把散落在本地和云端的个人经验、对话、笔记、文档自动扫描、按领域聚类，沉淀为多个结构化领域知识库（个人 wiki），并可将领域知识库编译输出为该领域的工作技能（SOP/检查清单/实战手册/Skill）。当用户想"建立知识库/个人 wiki/专家体系"、"扫描我的文档"、"沉淀经验"、"整理我的方法论"、"深潜/ExpertLoop"、想要某领域的"SOP/工作手册/技能包"时使用。
 description_zh: 把会议纪要、方案、复盘变成带数字和反例、能直接照做的条目
 description_en: Turn meeting notes, plans and post-mortems into executable entries with numbers and counter-examples
-version: 1.2.0
+version: 1.2.1
 author: zyqd
 examples_zh:
   - "把这个文件夹里的会议纪要和方案，变成一页能查的知识库"

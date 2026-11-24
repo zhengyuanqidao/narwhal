@@ -61,6 +61,14 @@ def show(proc: subprocess.CompletedProcess) -> None:
         print(proc.stderr.rstrip(), file=sys.stderr)
 
 
+def doctor_issues(d: subprocess.CompletedProcess) -> int:
+    """从 doctor 输出解析真实问题数（doctor 退出码已改为布尔语义，避免 256 回绕）。"""
+    m = re.search(r"发现问题\s*(\d+)\s*处", d.stdout)
+    if m:
+        return int(m.group(1))
+    return -1 if d.returncode else 0
+
+
 def skill_version() -> str:
     try:
         m = re.search(r"(?m)^version:\s*(\S+)", SKILL_MD.read_text(encoding="utf-8"))
@@ -196,20 +204,23 @@ def main() -> int:
         return 2
 
     out = Path(a.out).resolve() if a.out else root / "dist"
-    if out.exists():
-        import shutil
-        shutil.rmtree(out)
-    out.mkdir(parents=True)
-
+    # 安全闸门：out 必须是 root 的子目录。若 out 等于 root 或是它的父目录，
+    # 下面的 rmtree(out) 会把【输入库本身】连同 raw/ 一起删掉（已实测：52 文件→0）。
+    if out == root or root.is_relative_to(out):
+        print(f"✗ --out 不能是 wiki 根目录本身或其父目录：{out}\n"
+              "  接受子目录（如默认的 <root>/dist）；否则清理成品时会删除输入库。",
+              file=sys.stderr)
+        return 2
     version = skill_version()
     print(f"知识库: {root}\n成品目录: {out}\n技能版本: {version}")
 
-    # 1) 体检：退出码 = 问题数
+    # 1) 体检：退出码为布尔语义（0=无问题，1=有问题）
     d = run_step("doctor", ["doctor", root])
     show(d)
     doctor_ok = d.returncode == 0
+    issues = doctor_issues(d)
     if not doctor_ok:
-        print(f"✗ 体检发现 {d.returncode} 处问题。", file=sys.stderr)
+        print(f"✗ 体检发现 {issues} 处问题。", file=sys.stderr)
 
     # 2) 五项验收：--json 便于机器判定
     r = run_step("report", [root, "--json"])
@@ -230,24 +241,30 @@ def main() -> int:
               "  修好条目后重跑；仅自查可加 --allow-fail。", file=sys.stderr)
         return 1
 
-    # 3) 双导出
+    # 3) 门禁通过才清理并创建成品目录（未达标时连空壳都不留，且保留旧成品）
+    if out.exists():
+        import shutil
+        shutil.rmtree(out)
+    out.mkdir(parents=True)
+
+    # 4) 双导出
     e1 = run_step("export", [root, "--format", "human", "--out", out / "human"])
     show(e1)
     e2 = run_step("export", [root, "--format", "rag", "--out", out / "rag", "--max-chars", "500"])
     show(e2)
 
-    # 4) 传播节点（产物自带，自动带落款与「怎么做一份」）
+    # 5) 传播节点（产物自带，自动带落款与「怎么做一份」）
     samples = collect_samples(root)
     write_share_node(out, root, a.title, a.by, report, samples, version)
     print("\n✓ 传播节点已生成: SHARE.md + index.html（可转发、带落款）")
 
-    # 5) 清单
+    # 6) 清单
     manifest = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "skill_version": version,
         "wiki_root": str(root),
         "entries": report.get("meta", {}).get("entries", len(samples)),
-        "doctor_issues": d.returncode,
+        "doctor_issues": issues,
         "acceptance": overall,
         "metrics": {k: v["verdict"] for k, v in report.get("metrics", {}).items()},
         "delivered": gate_ok,

@@ -74,8 +74,10 @@ def stats(root: Path):
 if __name__ == "__main__":
     cmd, root = sys.argv[1], Path(sys.argv[2])
     if cmd == "doctor":
-        # 退出码 = 问题数，供一键入口/脚本判定「能不能交付」。
-        # 旧版 doctor(root) 的返回值被丢弃，恒为 0，机器判不出失败 → 人得盯着。
-        sys.exit(doctor(root))
+        # 退出码用标准布尔语义：有问题=1，无问题=0。
+        # 不能用「问题数」当退出码：进程退出码仅 8 位，问题数恰好是 256 的倍数时
+        # 会回绕成 0，run.py 门禁会误判「PASS 可对外」（已由 256 断链用例实测复现）。
+        # 真实问题数由 doctor() 打印在输出里，需要的调用方从输出解析。
+        sys.exit(1 if doctor(root) else 0)
     else:
         stats(root)
