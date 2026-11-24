@@ -73,4 +73,9 @@ def stats(root: Path):
 
 if __name__ == "__main__":
     cmd, root = sys.argv[1], Path(sys.argv[2])
-    doctor(root) if cmd == "doctor" else stats(root)
+    if cmd == "doctor":
+        # 退出码 = 问题数，供一键入口/脚本判定「能不能交付」。
+        # 旧版 doctor(root) 的返回值被丢弃，恒为 0，机器判不出失败 → 人得盯着。
+        sys.exit(doctor(root))
+    else:
+        stats(root)
