@@ -5,7 +5,7 @@ display_name_en: Docs to Wiki
 description: 把散落在本地和云端的个人经验、对话、笔记、文档自动扫描、按领域聚类，沉淀为多个结构化领域知识库（个人 wiki），并可将领域知识库编译输出为该领域的工作技能（SOP/检查清单/实战手册/Skill）。当用户想"建立知识库/个人 wiki/专家体系"、"扫描我的文档"、"沉淀经验"、"整理我的方法论"、"深潜/ExpertLoop"、想要某领域的"SOP/工作手册/技能包"时使用。
 description_zh: 把会议纪要、方案、复盘变成带数字和反例、能直接照做的条目
 description_en: Turn meeting notes, plans and post-mortems into executable entries with numbers and counter-examples
-version: 1.2.1
+version: 1.2.2
 author: zyqd
 examples_zh:
   - "把这个文件夹里的会议纪要和方案，变成一页能查的知识库"
@@ -83,6 +83,7 @@ wiki/
 ```
 
 规则：
+- **入口文件必须在 wiki 根目录**（不是 `moc/` 里）：`SCHEMA.md`、`HOME.md`、`log.md`、`triage.md`。`moc/` 只放领域地图（`moc/<领域>.md`）。放错位置会让体检判据与交付说明对不上。
 - `raw/` 一经写入**永不修改**；agent 只读取，任何提炼都落到 entries/cases。
 - 条目中引用源材料时，用相对链接指向 `raw/` 对应文件。
 - 每次任何写操作（新建/更新/体检）结束后，**必须在 log.md 末尾追加一行**：`- YYYY-MM-DD | 模式X | 动作摘要`。
@@ -267,6 +268,7 @@ python3 scripts/run.py <wiki根目录> --title "标题" --by "落款" --zip
 - `raw/` 不可变；log.md 只追加；SCHEMA.md 是唯一结构权威。
 - 不搬运网上随处可见的通用知识；通用背景最多一句话带过并给链接。
 - 每次入库后必须检查：新条目是否至少链接了 1 个已有条目？没有则主动找用户确认关联。**例外**：首次建库（cold start）时库中无任何已有条目，此规则不适用——此时要求每条至少被 HOME.md 或一个 MOC 挂载（入链即可），并在同批条目间建立交叉引用；待第二批入库起恢复"链接已有条目"要求。
+- **双链写法（体检判据，必须遵守）**：`[[双链]]` 必须写在**条目正文里**——frontmatter 的 `links:` 字段**不算**（doctor 只解析正文的 `[[...]]`）；链接目标必须是**目标条目的 `title` 字段原文**，不是文件名、不是领域名。MOC 的"与其他领域的关系"若指领域，写**普通文本**不要加 `[[]]`；只有指向具体条目时才用 `[[条目标题]]`。违反会导致 doctor 报"断链"和"孤儿条目"（已由零脚本版换手实测复现：仅写 links 字段 + 用领域名当链接 = 24 断链、孤儿 100%）。
 - 每次更新 HOME.md 的"最近更新"区块。
 - 每次交付前必须 `wiki_version.py bump`，交付物里带 `VERSION` 与 `CHANGELOG.md`——客户要能回答"这次的库比上次好在哪"。
 - 不要因为一次微改就重跑整条：先看 `diff` 的相似度判定，≥90% 只改局部。

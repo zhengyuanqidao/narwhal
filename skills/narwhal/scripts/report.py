@@ -173,24 +173,43 @@ def metric_traceability(sources, entries) -> tuple[float, dict]:
 
 
 def metric_orphan(root: Path, entries) -> tuple[float, dict]:
-    """无入链条目占比（被条目 links 或 MOC 引用即为有入链）。"""
+    """无入链条目占比（被条目正文双链或 MOC 引用即为有入链）。
+
+    关键：入链解析必须和 doctor 对齐——doctor 用条目的 title 字段建索引，
+    这里原来只用文件名（e["name"]）建索引。当文件名是 E01 这类 ID、title 是
+    中文时，正文里按规格写的 [[title 原文]] 永远匹配不到文件名 → 100% 误判孤儿。
+    修法：为每个条目同时登记 title 与文件名两个键，任一被链接即视为有入链。
+    """
     if not entries:
         return 0.0, {}
-    names = {e["name"] for e in entries}
-    inbound = {n: 0 for n in names}
+    # 条目身份：文件名 -> 它自己的 title（用于排除自链）
+    own = {e["name"]: e["fm"].get("title", "").strip() for e in entries}
+    aliases = {}  # 链接目标写法（title 或文件名） -> 规范化的条目名
+    for e in entries:
+        aliases[e["name"]] = e["name"]
+        t = own[e["name"]]
+        if t:
+            aliases[t] = e["name"]
+    inbound = {e["name"]: 0 for e in entries}
+
+    def resolve(tgt: str, self_name: str) -> str | None:
+        tgt = tgt.split("|")[0].split("#")[0].strip()
+        hit = aliases.get(tgt)
+        return hit if hit and hit != self_name else None
+
     for e in entries:
         for tgt in WIKILINK.findall(e["text"]):
-            tgt = tgt.split("|")[0].split("#")[0].strip()
-            if tgt in inbound and tgt != e["name"]:
-                inbound[tgt] += 1
+            hit = resolve(tgt, e["name"])
+            if hit:
+                inbound[hit] += 1
     moc = root / "moc"
     if moc.exists():
         for p in moc.rglob("*.md"):
             hits = set()
             for tgt in WIKILINK.findall(p.read_text(encoding="utf-8")):
-                tgt = tgt.split("|")[0].split("#")[0].strip()
-                if tgt in inbound:
-                    hits.add(tgt)
+                hit = resolve(tgt, "")
+                if hit:
+                    hits.add(hit)
             for h in hits:
                 inbound[h] += 1
     orphan = [n for n, c in inbound.items() if c == 0]

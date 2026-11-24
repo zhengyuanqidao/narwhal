@@ -11,6 +11,14 @@ from pathlib import Path
 
 FRONT = re.compile(r"^---\n(.*?)\n---", re.S)
 LINK = re.compile(r"\[\[([^\]|#]+?)\]\]")
+# 反引号内的 [[]] 是说明性 code span（如在 SCHEMA/MOC 里举例"[[条目标题]]"），
+# 不是真链接——markdown 语义上 code span 是字面文本，不应做断链检查。
+CODE_SPAN = re.compile(r"`[^`]*`")
+
+
+def link_targets(text: str):
+    """产出可用于断链检查的链接目标：剔除反引号 code span、跳过日志类文件。"""
+    return (m.group(1) for m in LINK.finditer(CODE_SPAN.sub("", text)))
 
 
 def collect(root: Path):
@@ -38,17 +46,21 @@ def doctor(root: Path):
     docs, raw = collect(root)
     issues = 0
     for p, text in raw:
-        for m in LINK.finditer(text):
-            target = norm(m.group(1))
-            if target not in docs:
-                print(f"✗ 断链: {p.relative_to(root)} -> [[{m.group(1)}]]")
-                issues += 1
+        # log.md 是动作日志，不是知识内容：里面写"加了 44 处 [[双链]]"这类
+        # 统计说明不应被当断链。真正的链接只在 entries/cases/moc 的知识正文里。
+        if p.name == "log.md":
+            pass
+        else:
+            for target in link_targets(text):
+                if norm(target) not in docs:
+                    print(f"✗ 断链: {p.relative_to(root)} -> [[{target}]]")
+                    issues += 1
         fm = FRONT.search(text)
         if not fm and "moc" not in p.parts and p.name != "HOME.md":
             print(f"✗ 缺少 frontmatter: {p.relative_to(root)}")
             issues += 1
     # 孤儿条目：没有出链也没有入链
-    inbound = {norm(m.group(1)) for _, text in raw for m in LINK.finditer(text)}
+    inbound = {norm(t) for _, text in raw for t in link_targets(text)}
     for title, p in docs.items():
         if not p:
             continue
