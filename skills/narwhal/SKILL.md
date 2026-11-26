@@ -5,7 +5,7 @@ display_name_en: Docs to Wiki
 description: 把散落在本地和云端的个人经验、对话、笔记、文档自动扫描、按领域聚类，沉淀为多个结构化领域知识库（个人 wiki），并可将领域知识库编译输出为该领域的工作技能（SOP/检查清单/实战手册/Skill）。当用户想"建立知识库/个人 wiki/专家体系"、"扫描我的文档"、"沉淀经验"、"整理我的方法论"、"深潜/ExpertLoop"、想要某领域的"SOP/工作手册/技能包"、或已有知识库"又加了新文件/接着更新/别重做"时使用。
 description_zh: 把会议纪要、方案、复盘变成带数字和反例、能直接照做的条目
 description_en: Turn meeting notes, plans and post-mortems into executable entries with numbers and counter-examples
-version: 1.2.3
+version: 1.3.0
 author: zyqd
 examples_zh:
   - "把这个文件夹里的会议纪要和方案，变成一页能查的知识库"
@@ -69,6 +69,8 @@ wiki/
 ├── log.md                     # 追加式动作日志（YYYY-MM-DD + 做了什么），只增不删
 ├── raw/                       # 第1层：不可变源材料——原文、对话记录、文档、笔记导入
 │   └── <YYYY-MM-DD>-<来源名>.md
+├── incoming/                  # 待处理输入：新投材料 + 反馈登记（模式 G），由模式 B/G 消化
+├── FEEDBACK-QUEUE.md          # 待处理反馈队列（feedback.py 维护），处理后从 incoming 归档到 raw
 ├── moc/                       # 第2层：知识地图（Map of Content），按领域一图一文件
 │   └── <领域名>.md
 ├── entries/                   # 第2层：原子知识条目（agent 拥有，可增改）
@@ -286,6 +288,31 @@ python3 scripts/run.py <wiki根目录> --title "标题" --by "落款" --zip
 5. 交付三件齐备：`VERSION`（`wiki_version.py bump`）+ `CHANGELOG.md` + 验收报告。
 
 注意：report.py 的覆盖率**排除目录/致谢/参考这类结构性章节**（它们不是知识单元）；英文按词匹配、中文按字符 2-gram，不要用字符 2-gram 匹配英文——那样任何文本都会 100% 命中，指标等于失效。
+
+### 模式 G：反馈登记（feedback）
+
+使用者说"这条答错了/过期了/缺反例/有新证据"时：
+
+```bash
+python3 scripts/feedback.py add <wiki> --target "条目title原文" --kind "答错|过期|缺反例|新证据" --detail "反馈原文" --by "来源"
+python3 scripts/feedback.py queue <wiki>   # 看待处理队列
+```
+
+**诚实边界**：脚本**不改条目**——语义修正（改哪句、结论是否推翻）是模型判断，由下一次 agent 会话走模式 B/G 完成。脚本只确定性地做三件事：反馈材料落到 `incoming/`、log.md 追加待处理记录、刷新 `FEEDBACK-QUEUE.md`。
+所以"进化" = 反馈登记 → 下次增量把它当新材料处理 → 版本 bump；触发者是下一次会话，不是脚本自动改写。人改过的条目（human-edit）只能标"需人工确认"，不得覆盖。处理完把反馈文件从 `incoming/` 移到 `raw/` 归档，队列自动收缩。
+
+### 模式 H：封装为平台专家（expert-forge）
+
+> 这是**作者侧资产工程**（OPC 生产资料），不是终端用户技能包自带的能力：`expert_forge.py` 与 `validate.py` 位于 `workbuddy-assets/shared/`，不在技能 zip 内。普通使用者说"做成专家"时，回答"由打包流程处理"，不要假装包里有这个脚本。
+
+把编译好的知识库封装为平台专家包（打包侧执行）：
+
+```bash
+python3 <assets>/shared/expert_forge.py --wiki <wiki> --domain <领域名> --name <英文id> --out <输出目录>
+python3 <assets>/shared/validate.py <输出目录>    # 平台校验须 0 FAIL
+```
+
+**诚实边界**：脚本只做确定性封装——读 `exports/<领域>/` 的 SOP/CHECKLIST/PLAYBOOK/BRIEF，拼出 `plugin.json` + `agents/<id>.md` + 头像 + README。**能力来自知识库内容，不来自这个壳**。exports 缺失时只产出"身份壳"，必须明确告知使用者"当前无工作能力，先用模式 E/B 编译、skill-forge 产出后再封装"，不许假装已具备该领域能力。上架前按 RELEASE 流程自测全流程。
 
 ## 质量红线
 

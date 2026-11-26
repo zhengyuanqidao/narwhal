@@ -3,6 +3,16 @@
 All notable changes to Narwhal will be documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/), versioning follows [SemVer](https://semver.org/).
 
+## [1.3.0] - 2026-11-26
+
+### Added
+
+- 模式 G 反馈登记（`scripts/feedback.py`）：把「答错/过期/缺反例/新证据」登记为 `incoming/` 材料 + `FEEDBACK-QUEUE.md` + log 记录；**不改条目**，语义修正仍由下次会话走模式 B/G 完成（诚实边界：反馈登记 ≠ 自动改写）
+- 模式 H 专家封装规格：明确 `expert_forge.py` 是作者侧资产工程（`workbuddy-assets/shared/`），不是终端技能包自带能力；exports 缺失时只允许产出「身份壳」并如实告知
+- 配套 `shared/make_avatar.py`：可复现的 512×512 PNG 技能头像（解决上架唯一缺的材料）
+
+> 说明：1.0.1–1.2.3 的版本演进记录在 git commit message 与 `eval/runs/*/RESULT.md`，未逐条回写本文件，避免事后追溯造成失真。
+
 ## [1.0.0] - 2026-11-10
 
 ### Added
